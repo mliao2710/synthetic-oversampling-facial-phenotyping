@@ -1,0 +1,53 @@
+# Patient / image data
+*.jpg
+*.jpeg
+*.png
+*.tif
+*.tiff
+*.dicom
+*.dcm
+
+# Model weights and checkpoints
+*.pt
+*.pth
+*.onnx
+*.ckpt
+*.bin
+*.safetensors
+
+# Logs / HPC outputs
+*.log
+*.out
+*.err
+*.stdout
+*.stderr
+slurm-*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# Large/raw data
+data/*
+!data/README.md
+
+# Credentials / secrets
+.env
+*.pem
+*.key
+credentials*
+token*
+
+# OS/editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Temporary / backup files
+*.bak
+*.tmp
+*.before_*

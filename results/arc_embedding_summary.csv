@@ -1,0 +1,2 @@
+metric,baseline,pd50,change
+cosine_silhouette,0.2283287495,0.2669481039,0.0386193544

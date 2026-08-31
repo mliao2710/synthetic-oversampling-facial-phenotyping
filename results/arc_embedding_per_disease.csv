@@ -1,0 +1,11 @@
+disease,real_train_n,compactness_change_pct,separation_change_pct,separation_compactness_ratio_change_pct
+Cornelia de Lange syndrome,312,-9.353,-9.862,-0.561
+Williams-Beuren syndrome,191,-2.333,9.511,12.126
+Noonan syndrome,145,-9.063,2.065,12.237
+Kabuki syndrome,144,-9.248,4.760,15.435
+KBG syndrome,125,-13.535,18.559,37.118
+Angelman syndrome,111,-3.317,18.461,22.525
+Rubinstein-Taybi syndrome,81,-3.358,4.906,8.551
+Smith-Magenis syndrome,71,2.348,23.909,21.067
+Nicolaides-Baraitser syndrome,68,-5.688,9.511,16.116
+22q11.2 deletion syndrome,41,0.941,23.909,22.755

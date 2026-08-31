@@ -1,0 +1,26 @@
+# Core deep learning
+torch==2.3.1
+torchvision==0.18.1
+transformers==4.38.2
+
+# Data
+datasets==5.0.0
+numpy==1.24.4
+pandas==2.0.3
+Pillow==10.4.0
+
+# Image processing
+albumentations==1.2.1
+scikit-image==0.21.0
+opencv-python
+
+# Arc backbone conversion
+onnx2torch==1.4.1
+
+# Analysis
+scikit-learn==1.7.2
+matplotlib==3.7.5
+umap-learn==0.5.12
+
+# Utilities
+tqdm==4.68.4

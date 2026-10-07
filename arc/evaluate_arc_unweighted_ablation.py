@@ -65,7 +65,7 @@ LOGS = {
 # CHECKPOINT SELECTION
 # ============================================================
 
-def select_best_mean_top1(log_path):
+def select_best_top1(log_path):
     """
     Select the checkpoint with the highest overall Top-1 accuracy.
     Ties are resolved in favor of the earlier epoch.
@@ -111,7 +111,7 @@ def select_best_mean_top1(log_path):
             f"{log_path}: expected 50 parsed epochs, found {len(records)}"
         )
 
-    # Highest Mean Top-1; ties -> earliest epoch
+    # Highest overall Top-1; ties -> earliest epoch
     best = max(
         records,
         key=lambda r: (r["overall_top1_log"], -r["epoch"])
@@ -300,7 +300,7 @@ def main():
             if not Path(log_path).is_file():
                 raise FileNotFoundError(log_path)
 
-            best = select_best_mean_top1(log_path)
+            best = select_best_top1(log_path)
 
             row = {
                 "seed": seed,

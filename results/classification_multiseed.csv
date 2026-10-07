@@ -1,0 +1,11 @@
+model,condition,top1_mean,top1_sd,mean_top1_mean,mean_top1_sd,top3_mean,top3_sd,top5_mean,top5_sd
+GestaltMatcher-Arc,Baseline,89.19,0.92,87.23,1.18,97.25,0.27,98.27,0.27
+GestaltMatcher-Arc,PD25,89.96,0.65,89.15,0.80,97.01,0.27,98.45,0.37
+GestaltMatcher-Arc,PD50,90.20,0.58,88.30,0.73,97.61,0.10,98.86,0.21
+GestaltMatcher-Arc,PD75,90.02,0.45,88.24,1.08,97.25,0.37,98.69,0.27
+GestaltMatcher-Arc,PD100,89.84,0.52,88.31,0.24,97.13,0.36,98.63,0.10
+GestaltMML,Baseline,68.82,1.53,64.02,2.14,86.26,0.83,93.55,1.12
+GestaltMML,PD25,69.65,1.45,65.23,1.58,87.28,0.47,94.03,0.45
+GestaltMML,PD50,72.16,1.77,68.25,1.99,88.41,1.63,94.15,0.99
+GestaltMML,PD75,73.66,1.35,69.04,1.39,89.55,1.08,95.40,0.58
+GestaltMML,PD100,74.31,0.90,69.39,1.03,89.84,0.55,95.34,1.00

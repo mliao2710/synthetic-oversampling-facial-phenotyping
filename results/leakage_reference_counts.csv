@@ -1,0 +1,4 @@
+reference_threshold,threshold_value,synthetic_count,total_synthetic
+real_train_p95,0.798514,24,1727
+real_train_p99,0.842122,1,1727
+real_train_max,0.898191,0,1727

@@ -1,0 +1,5 @@
+loss,condition,top1_mean,top1_sd,paired_delta_mean,paired_delta_sd
+weighted_ce,Baseline,89.19,0.92,,
+weighted_ce,PD50,90.20,0.58,1.02,1.49
+unweighted_ce,Baseline,89.25,1.00,,
+unweighted_ce,PD50,90.26,0.72,1.02,1.72

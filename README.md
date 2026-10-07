@@ -3,11 +3,11 @@
 Code and reproducibility materials for evaluating synthetic facial-image
 oversampling in long-tailed rare-disease classification.
 
-The study evaluates five training conditions (Baseline, PD25, PD50, PD75,
+This study evaluates five training conditions (Baseline, PD25, PD50, PD75,
 and PD100) using two complementary facial phenotyping architectures:
 
 - **GestaltMatcher-Arc** — image-based classification using a pretrained
-  Glint360K R50 face representation network.
+  Glint360K R50 facial representation network.
 - **GestaltMML** — multimodal classification using facial images and
   phenotype-related clinical text.
 
@@ -16,93 +16,141 @@ Synthetic images are used only for training augmentation.
 
 ## Repository structure
 
-    arc/       GestaltMatcher-Arc training, evaluation, dataset, and embedding analysis
+    arc/       GestaltMatcher-Arc training, evaluation, embedding, and audit code
     mml/       GestaltMML training and evaluation
-    data/      Data setup and availability documentation
-    results/   Lightweight numerical results reported in the study
+    data/      Data documentation and public PDIDB augmentation manifests
+    results/   Numerical results and sensitivity/audit summaries
 
 ## Dataset
 
-The experiments use a 10-disease subset of the GestaltMatcher Database:
+Experiments use a 10-disease subset of the GestaltMatcher Database:
 
 - 1,289 real training images
 - 558 real evaluation images
 - 10 disease classes
-- zero patient and image overlap between training and evaluation
+- patient-disjoint training and evaluation partitions
 
 Synthetic augmentation uses PDIDB images at increasing fractions of the
-available synthetic pool for each disease:
+available synthetic pool:
 
 | Condition | Synthetic images | Total training images |
 |-----------|-----------------:|----------------------:|
-| Baseline  | 0                | 1,289 |
-| PD25      | 433              | 1,722 |
-| PD50      | 866              | 2,155 |
-| PD75      | 1,298            | 2,587 |
-| PD100     | 1,727            | 3,016 |
+| Baseline  | 0     | 1,289 |
+| PD25      | 433   | 1,722 |
+| PD50      | 866   | 2,155 |
+| PD75      | 1,298 | 2,587 |
+| PD100     | 1,727 | 3,016 |
 
-See `data/README.md` for data configuration and availability.
+The augmentation sets are nested:
+
+`PD25 ⊂ PD50 ⊂ PD75 ⊂ PD100`
+
+Exact public PDIDB identifiers for each condition are provided under
+`data/pdidb_manifests/`.
+
+Patient facial images and restricted clinical data are not redistributed.
 
 ## Main results
 
+All classification experiments were repeated using training seeds **11, 22,
+and 33**. The real-data split and synthetic subsets were held fixed across
+training seeds. Values below are mean ± sample SD.
+
 ### GestaltMatcher-Arc
 
-The highest observed overall Top-1 accuracy occurred at PD50:
+Overall Top-1 accuracy:
 
-- Baseline: **88.17%**
-- PD50: **90.86%**
-- Change: **+2.69 percentage points**
+- Baseline: **89.19 ± 0.92%**
+- PD25: **89.96 ± 0.65%**
+- PD50: **90.20 ± 0.58%**
+- PD75: **90.02 ± 0.45%**
+- PD100: **89.84 ± 0.52%**
 
-The cosine silhouette score of the 512-dimensional representations increased
-from **0.2283** at Baseline to **0.2669** at PD50. Nearest-centroid separation
-increased for 9 of 10 disease classes.
+The highest observed mean overall Top-1 accuracy occurred at PD50.
+
+The representative seed-11 Baseline-versus-PD50 embedding analysis showed an
+increase in cosine silhouette score from **0.2283** to **0.2669**. Quantitative
+embedding metrics were computed in the original 512-dimensional representation
+space.
 
 ### GestaltMML
 
-Performance continued improving through the largest tested augmentation level:
+Overall Top-1 accuracy increased across the tested augmentation levels:
 
-- Baseline: **67.20%**
-- PD100: **75.27%**
-- Change: **+8.07 percentage points**
+- Baseline: **68.82 ± 1.53%**
+- PD25: **69.65 ± 1.45%**
+- PD50: **72.16 ± 1.77%**
+- PD75: **73.66 ± 1.35%**
+- PD100: **74.31 ± 0.90%**
 
-Complete classification and embedding results are provided in `results/`.
+Synthetic images in GestaltMML were paired only with placeholder text rather
+than additional clinical-text information.
 
-## Data configuration
+Complete aggregate results are provided under `results/`.
 
-Patient facial images and restricted clinical data are not included.
+## Class-weighting sensitivity analysis
 
-Set local data locations before running the experiments:
+To test whether the GestaltMatcher-Arc augmentation effect depended on
+class-frequency-weighted cross-entropy, Baseline and PD50 were additionally
+evaluated with unweighted cross-entropy across the same three training seeds.
 
-    export GMDB_IMAGE_ROOT=/path/to/gmdb_crops
-    export GMDB_DATASET_ROOT=/path/to/GestaltMatcherDB
+- Weighted CE paired PD50 gain: **+1.02 ± 1.49 percentage points**
+- Unweighted CE paired PD50 gain: **+1.02 ± 1.72 percentage points**
 
-See `data/README.md` for details.
+The similar gains indicate that the modest Arc augmentation effect was not
+primarily attributable to class-frequency weighting.
+
+## Leakage audit
+
+The full 1,727-image PDIDB synthetic pool was screened against the 558-image
+real evaluation partition using:
+
+1. exact pixel-level hashes;
+2. perceptual hashes;
+3. nearest-neighbor cosine similarity in the 512-dimensional
+   GestaltMatcher-Arc representation space.
+
+No exact pixel duplicates were identified.
+
+Synthetic-to-evaluation nearest-neighbor similarities were generally lower
+than the real-training-to-evaluation patient-disjoint reference distribution:
+
+- synthetic → evaluation median: **0.591**
+- real training → evaluation median: **0.670**
+- synthetic → evaluation maximum: **0.851**
+- real training → evaluation maximum: **0.898**
+
+Manual inspection of the closest perceptual and embedding matches found no
+apparent duplicate images. Restricted patient-face contact sheets are not
+redistributed.
+
+Numerical audit summaries are available under `results/`.
 
 ## GestaltMatcher-Arc
 
-Run Arc commands from the `arc/` directory:
+Run Arc commands from:
 
     cd arc
 
-Build the fixed 10-disease dataset:
-
-    python build_gmdb10_v2.py
-
-Build the synthetic augmentation conditions:
-
-    python build_gmdb10_pd_v2.py
-
-Training is performed with:
+Training:
 
     python train_gm_arc.py [arguments]
 
-Final disease-specific evaluation:
+Canonical multi-seed evaluation:
 
-    python evaluate_arc_v2_per_disease.py
+    python evaluate_arc_multiseed.py
 
-Baseline-versus-PD50 embedding analysis:
+Class-weighting sensitivity analysis:
+
+    python evaluate_arc_unweighted_ablation.py
+
+Representative Baseline-versus-PD50 embedding analysis:
 
     python analyze_arc_embeddings_v2.py
+
+Leakage screening:
+
+    python leakage_check.py
 
 ## GestaltMML
 
@@ -110,13 +158,8 @@ GestaltMML training is implemented in:
 
     mml/train_gestaltmml_10d.py
 
-SLURM scripts reproduce the five experimental conditions:
-
-    mml/run_gestaltmml_v2_baseline.slurm
-    mml/run_gestaltmml_v2_pd25.slurm
-    mml/run_gestaltmml_v2_pd50.slurm
-    mml/run_gestaltmml_v2_pd75.slurm
-    mml/run_gestaltmml_v2_pd100.slurm
+Training configurations for the five augmentation conditions are provided in
+the corresponding SLURM scripts under `mml/`.
 
 Disease-specific evaluation is implemented in:
 
@@ -124,11 +167,41 @@ Disease-specific evaluation is implemented in:
 
 ## Reproducibility
 
-The principal experiments use random seed 11. All augmentation conditions
-share the same fixed real training/evaluation partition, and synthetic images
-are added only to the training partition.
+Classification experiments use training seeds **11, 22, and 33**.
 
-Exact numerical summaries used in the study are available under `results/`.
+The following are fixed across training seeds:
+
+- patient-disjoint GMDB training/evaluation partition;
+- PDIDB synthetic subsets;
+- model configuration within each architecture.
+
+Synthetic subset selection uses sampling seed **11**.
+
+For each training run, the selected checkpoint is the epoch with the highest
+**overall Top-1 accuracy** on the fixed evaluation partition. If multiple
+epochs have identical overall Top-1 accuracy, the earliest epoch is selected.
+
+The same evaluation partition is used for checkpoint selection and reported
+classification metrics, as described in the manuscript.
+
+Exact synthetic-image manifests are provided under:
+
+    data/pdidb_manifests/
+
+The manifests expose public PDIDB image identifiers so the nested augmentation
+sets can be reconstructed without access to restricted GMDB data.
+
+Restricted GMDB patient images, clinical data, and trained checkpoints are not
+redistributed.
+
+## Data configuration
+
+Set local data locations before running experiments:
+
+    export GMDB_IMAGE_ROOT=/path/to/gmdb_crops
+    export GMDB_DATASET_ROOT=/path/to/GestaltMatcherDB
+
+See `data/README.md` for additional information.
 
 ## Upstream software
 
@@ -141,5 +214,5 @@ subject to their respective licenses and usage conditions.
 
 ## License
 
-Licensing and attribution information for redistributed upstream components
-is provided with this repository.
+Licensing and attribution information for redistributed upstream components is
+provided with this repository.
